@@ -10,18 +10,22 @@ export function AuthProvider({ children }) {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    useEffect(() => {
++   console.log('🔄 AuthContext:init subscribing to Firebase auth');
+    const unsubscribe = onAuthStateChanged(auth, async currentUser => {
++     console.log('🔔 onAuthStateChanged:', currentUser);
       if (currentUser) {
         setUser(currentUser);
         const ref = doc(db, 'users', currentUser.uid);
         const snap = await getDoc(ref);
-        if (snap.exists()) setRole(snap.data().role);
+        setRole(snap.exists() ? snap.data().role : null);
++       console.log('📋 role fetched from Firestore:', snap.exists() ? snap.data().role : null);
       } else {
         setUser(null);
         setRole(null);
       }
       setLoading(false);
++     console.log('✔️ loading set to false');
     });
     return unsubscribe;
   }, []);
