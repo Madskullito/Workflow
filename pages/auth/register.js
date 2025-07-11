@@ -12,7 +12,7 @@ export default function Register() {
     e.preventDefault();
     try {
       await signup(email, password);
-      router.push('/dashboard?role=cliente');
+      router.push('/dashboard');
     } catch (err) {
       console.error(err);
     }
