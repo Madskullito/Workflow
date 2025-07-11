@@ -1,49 +1,53 @@
 import { useState } from 'react';
-import { createTask } from '../services/taskService';
 
-export default function TaskForm() {
+export default function TaskForm({ onSubmit }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [collaboratorId, setCollaboratorId] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
-    await createTask({ title, description, collaboratorId });
+    onSubmit({ title, description, collaboratorId });
     setTitle('');
     setDescription('');
     setCollaboratorId('');
-    alert('Tarea creada y enviada por WhatsApp');
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-6">
-      <h2 className="text-xl mb-2">Crear y Asignar Tarea</h2>
+    <form onSubmit={handleSubmit} className="p-4 bg-white rounded shadow">
       <input
+        className="w-full p-2 mb-2 border rounded"
         type="text"
         placeholder="Título"
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={e => setTitle(e.target.value)}
         required
-        className="w-full p-2 mb-2 border rounded"
       />
+
       <textarea
+        className="w-full p-2 mb-2 border rounded"
         placeholder="Descripción"
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={e => setDescription(e.target.value)}
         required
-        className="w-full p-2 mb-2 border rounded"
       />
+
       <input
+        className="w-full p-2 mb-4 border rounded"
         type="text"
         placeholder="UID del Colaborador"
         value={collaboratorId}
-        onChange={(e) => setCollaboratorId(e.target.value)}
+        onChange={e => setCollaboratorId(e.target.value)}
         required
-        className="w-full p-2 mb-2 border rounded"
       />
-      <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
+
+      <button
+        type="submit"
+        className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
         Crear y Asignar
       </button>
     </form>
   );
 }
+
