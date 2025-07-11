@@ -1,10 +1,15 @@
-import '../styles/globals.css';
-import { AuthProvider } from '../context/AuthContext';
+import NavBar from '@/components/NavBar';
+import '@/styles/globals.css';
 
-export default function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }) {
   return (
-    <AuthProvider>
-      <Component {...pageProps} />
-    </AuthProvider>
+    <>
+      <NavBar />
+      <main className="pt-16">
+        <Component {...pageProps} />
+      </main>
+    </>
   );
 }
+
+export default MyApp;
