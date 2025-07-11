@@ -8,19 +8,27 @@ export default function TaskList({ role }) {
 
   useEffect(() => {
     (async () => {
-      const data = role === 'admin' ? await getAllTasks() : await getTasksByCollaborator(user.uid);
+      const data =
+        role === 'admin'
+          ? await getAllTasks()
+          : await getTasksByCollaborator(user.uid);
       setTasks(data);
     })();
   }, [role, user]);
 
   return (
     <div>
-      <h2 className="text-xl mb-2">Tareas</h2>
+      <h2 className="text-xl mb-2">Listado de Tareas</h2>
       <ul className="space-y-2">
-        {tasks.map(t => (
-          <li key={t.id} className="p-2 border rounded">
-            <strong>{t.title}</strong><p>{t.description}</p><small>Asignado: {t.collaboratorId}</small>
+        {tasks.map((task) => (
+          <li key={task.id} className="p-2 border rounded">
+            <h3 className="font-semibold">{task.title}</h3>
+            <p>{task.description}</p>
+            <p className="text-sm text-gray-500">Asignado a: {task.collaboratorId}</p>
           </li>
         ))}
       </ul>
     </div>
+  );
+}
+
