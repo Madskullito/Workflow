@@ -12,7 +12,7 @@ export default function Login() {
     e.preventDefault();
     try {
       await login(email, password);
-      router.push('/dashboard?role=cliente');
+      router.push('/dashboard');
     } catch (err) {
       +     console.error(err);
 +     alert('Error de login: ' + err.code + ' – ' + err.message);
