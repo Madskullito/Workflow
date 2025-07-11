@@ -1,34 +1,19 @@
-import { useEffect, useState } from 'react';
-import { getAllTasks, getTasksByCollaborator } from '../services/taskService';
-import { useAuth } from '../context/AuthContext';
-
-export default function TaskList({ role }) {
-  const { user } = useAuth();
-  const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      const data =
-        role === 'admin'
-          ? await getAllTasks()
-          : await getTasksByCollaborator(user.uid);
-      setTasks(data);
-    })();
-  }, [role, user]);
+export default function TaskList({ tasks }) {
+  if (!tasks.length) {
+    return <p className="p-4 text-gray-500">No hay tareas aún.</p>;
+  }
 
   return (
-    <div>
-      <h2 className="text-xl mb-2">Listado de Tareas</h2>
-      <ul className="space-y-2">
-        {tasks.map((task) => (
-          <li key={task.id} className="p-2 border rounded">
-            <h3 className="font-semibold">{task.title}</h3>
-            <p>{task.description}</p>
-            <p className="text-sm text-gray-500">Asignado a: {task.collaboratorId}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul className="mt-4 space-y-3">
+      {tasks.map(task => (
+        <li key={task.id} className="p-4 bg-white rounded shadow">
+          <h3 className="font-semibold">{task.title}</h3>
+          <p className="text-gray-700">{task.description}</p>
+          <p className="mt-1 text-sm text-gray-500">
+            Asignado a: {task.collaboratorId}
+          </p>
+        </li>
+      ))}
+    </ul>
   );
 }
-
