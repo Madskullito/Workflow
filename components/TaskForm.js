@@ -3,21 +3,47 @@ import { createTask } from '../services/taskService';
 
 export default function TaskForm() {
   const [title, setTitle] = useState('');
-  const [desc, setDesc] = useState('');
-  const [collab, setCollab] = useState('');
+  const [description, setDescription] = useState('');
+  const [collaboratorId, setCollaboratorId] = useState('');
 
-  const submit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    await createTask({ title, description: desc, collaboratorId: collab });
-    setTitle(''); setDesc(''); setCollab('');
-    alert('Tarea creada y enviada');
+    await createTask({ title, description, collaboratorId });
+    setTitle('');
+    setDescription('');
+    setCollaboratorId('');
+    alert('Tarea creada y enviada por WhatsApp');
   };
 
   return (
-    <form onSubmit={submit} className="bg-white p-4 rounded shadow mb-6">
-      <h2 className="text-xl mb-2">Crear tarea</h2>
-      <input placeholder="Título" value={title} onChange={e => setTitle(e.target.value)} className="w-full p-2 mb-2 border rounded" required/>
-      <textarea placeholder="Descripción" value={desc} onChange={e => setDesc(e.target.value)} className="w-full p-2 mb-2 border rounded" required/>
-      <input placeholder="UID colaborador" value={collab} onChange={e => setCollab(e.target.value)} className="w-full p-2 mb-2 border rounded" required/>
-      <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Enviar</button>
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-6">
+      <h2 className="text-xl mb-2">Crear y Asignar Tarea</h2>
+      <input
+        type="text"
+        placeholder="Título"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        required
+        className="w-full p-2 mb-2 border rounded"
+      />
+      <textarea
+        placeholder="Descripción"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        required
+        className="w-full p-2 mb-2 border rounded"
+      />
+      <input
+        type="text"
+        placeholder="UID del Colaborador"
+        value={collaboratorId}
+        onChange={(e) => setCollaboratorId(e.target.value)}
+        required
+        className="w-full p-2 mb-2 border rounded"
+      />
+      <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
+        Crear y Asignar
+      </button>
     </form>
+  );
+}
