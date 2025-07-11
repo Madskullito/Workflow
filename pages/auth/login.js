@@ -14,7 +14,8 @@ export default function Login() {
       await login(email, password);
       router.push('/dashboard?role=cliente');
     } catch (err) {
-      console.error(err);
+      +     console.error(err);
++     alert('Error de login: ' + err.code + ' – ' + err.message);
     }
   };
 
