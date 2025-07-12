@@ -1,9 +1,37 @@
-import { db } from '../firebaseConfig';
-import { collection, addDoc, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+// services/taskService.js
+import { initializeApp } from 'firebase/app'
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  serverTimestamp
+} from 'firebase/firestore'
+import firebaseConfig from '../firebase/firebaseConfig' // mismo comment que arriba
 
-const col = collection(db, 'tasks');
+const app = initializeApp(firebaseConfig)
+const db = getFirestore(app)
 
-export const createTask = async (task) => addDoc(col, { ...task, status: 'pendiente', createdAt: new Date() });
-export const getTasksByCollaborator = async (uid) => (await getDocs(query(col, where('collaboratorId','==',uid)))).docs.map(d => ({id:d.id,...d.data()}));
-export const getAllTasks = async () => (await getDocs(col)).docs.map(d => ({id:d.id,...d.data()}));
-export const assignTask = async (id, collab) => { await updateDoc(doc(db,'tasks',id), {collaboratorId:collab}); window.open(`https://wa.me/524434530832?text=Tienes+una+nueva+tarea+${id}`); };
+export const addTask = async ({ title, description, collaboratorId }) => {
+  const docRef = await addDoc(collection(db, 'tasks'), {
+    title,
+    description,
+    collaboratorId,
+    status: 'pendiente',
+    createdAt: serverTimestamp()
+  })
+  return docRef.id
+}
+
+export const getTasksForUser = async collaboratorId => {
+  const q = query(
+    collection(db, 'tasks'),
+    where('collaboratorId', '==', collaboratorId),
+    orderBy('createdAt', 'desc')
+  )
+  const snap = await getDocs(q)
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+}
