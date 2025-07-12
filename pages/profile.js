@@ -1,52 +1,59 @@
 // pages/profile.js
-import { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { db } from '../services/firebase'
-import { doc, updateDoc } from 'firebase/firestore'
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { app } from "../lib/firebase"; // Ajusta la ruta si la tienes en otro sitio
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth()
-  const [phone, setPhone] = useState('')
-  const [photo, setPhoto] = useState('')
-  const [message, setMessage] = useState('')
+  const { user, loading } = useAuth();
+  const [whatsapp, setWhatsapp] = useState("");
+  const db = getFirestore(app);
 
-  if (loading) return <p>Cargando tu rol…</p>
-  if (!user) return <p>No estás autenticado.</p>
+  useEffect(() => {
+    if (!loading && user) {
+      // lee el número de whatsapp del doc user/{uid}
+      getDoc(doc(db, "users", user.uid))
+        .then(snap => {
+          if (snap.exists()) {
+            setWhatsapp(snap.data().whatsapp || "");
+          }
+        });
+    }
+  }, [user, loading, db]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const ref = doc(db, 'users', user.uid)
-    await updateDoc(ref, { phone, photo })
-    setMessage('Perfil actualizado.')
-  }
+  const handleSave = async (e) => {
+    e.preventDefault();
+    try {
+      await updateDoc(doc(db, "users", user.uid), { whatsapp });
+      alert("Número de WhatsApp actualizado");
+    } catch (err) {
+      console.error(err);
+      alert("Error al guardar: " + err.message);
+    }
+  };
+
+  if (loading) return <p>Cargando perfil…</p>;
+  if (!user)   return <p>No estás autenticado.</p>;
 
   return (
-    <div className="p-8 max-w-md mx-auto">
+    <div className="max-w-md mx-auto p-6 bg-white rounded shadow-md mt-10">
       <h1 className="text-2xl mb-4">Mi Perfil</h1>
-      {message && <p className="text-green-600 mb-4">{message}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block mb-1">N.º de WhatsApp</label>
-          <input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div>
-          <label className="block mb-1">URL de Foto</label>
-          <input
-            type="text"
-            value={photo}
-            onChange={(e) => setPhoto(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <button type="submit" className="bg-blue-600 text-white p-2 rounded">
-          Guardar Perfil
+      <p className="mb-2"><strong>Email:</strong> {user.email}</p>
+      <form onSubmit={handleSave}>
+        <label className="block mb-2">
+          Número de WhatsApp para notificaciones:
+        </label>
+        <input
+          type="text"
+          placeholder="+52 1 55 1234 5678"
+          value={whatsapp}
+          onChange={e => setWhatsapp(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+        />
+        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
+          Guardar
         </button>
       </form>
     </div>
-  )
+  );
 }
