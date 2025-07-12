@@ -1,45 +1,42 @@
-import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useRouter } from 'next/router';
+import { useState } from 'react'
+import { login, loginWithGoogle } from '../../services/authService'
 
 export default function Login() {
-  const { login, loginWithGoogle } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const router = useRouter();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await login(email, password);
-      router.push('/dashboard');
-    } catch (err) {
-      +     console.error(err);
-+     alert('Error de login: ' + err.code + ' – ' + err.message);
-    }
-  };
+  const handleSubmit = async e => {
+    e.preventDefault()
+    await login(email, password)
+  }
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-96">
-        <h2 className="text-2xl mb-4">Iniciar Sesión</h2>
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow-md w-full max-w-sm"
+      >
+        <h1 className="text-2xl mb-4">Iniciar Sesión</h1>
         <input
           type="email"
-          placeholder="Email"
+          placeholder="Correo"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
+          className="w-full p-2 mb-3 border rounded"
           required
-          className="w-full p-2 mb-4 border rounded"
         />
         <input
           type="password"
           placeholder="Contraseña"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
+          className="w-full p-2 mb-3 border rounded"
           required
-          className="w-full p-2 mb-4 border rounded"
         />
-        <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded mb-2">
+        <button
+          type="submit"
+          className="w-full p-2 bg-blue-600 text-white rounded mb-2"
+        >
           Entrar
         </button>
         <button
@@ -51,5 +48,6 @@ export default function Login() {
         </button>
       </form>
     </div>
-  );
+  )
 }
+
