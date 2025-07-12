@@ -1,27 +1,28 @@
 // services/authService.js
-import { initializeApp } from 'firebase/app'
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut
-} from 'firebase/auth'
-import firebaseConfig from '../firebase/firebaseConfig' // ajusta si tu config está en otra ruta
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { app } from "../lib/firebase";    // Ajusta esta ruta si tu firebase init está en otro sitio
 
-// Inicializa Firebase (asegúrate de tener firebaseConfig exportado)
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
-const googleProvider = new GoogleAuthProvider()
+const auth = getAuth(app);
 
-export const login = (email, password) =>
-  signInWithEmailAndPassword(auth, email, password)
+/**
+ * Inicia sesión con email y contraseña.
+ * @returns Promise<UserCredential>
+ */
+export function loginWithEmail(email, password) {
+  return signInWithEmailAndPassword(auth, email, password);
+}
 
-export const register = (email, password) =>
-  createUserWithEmailAndPassword(auth, email, password)
+/**
+ * Registra un usuario nuevo con email y contraseña.
+ * @returns Promise<UserCredential>
+ */
+export function registerWithEmail(email, password) {
+  return createUserWithEmailAndPassword(auth, email, password);
+}
 
-export const loginWithGoogle = () =>
-  signInWithPopup(auth, googleProvider)
-
-export const logout = () => signOut(auth)
+/**
+ * Cierra la sesión actual.
+ */
+export function logout() {
+  return signOut(auth);
+}
