@@ -1,39 +1,40 @@
 // context/AuthContext.js
-import { createContext, useContext, useEffect, useState } from 'react'
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth, db } from '../services/firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { createContext, useContext, useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { app } from "../lib/firebase";   // Ajusta según tu estructura
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [role, setRole] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  const [user, setUser]       = useState(null);
+  const [role, setRole]       = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      setUser(u)
+    const unsubscribe = onAuthStateChanged(auth, async u => {
+      setUser(u);
       if (u) {
-        // lee el role de Firestore
-        const ref = doc(db, 'users', u.uid)
-        const snap = await getDoc(ref)
-        setRole(snap.data()?.role || null)
+        // intenta leer role en Firestore /users/{uid}
+        const snap = await getDoc(doc(db, "users", u.uid));
+        setRole(snap.exists() ? snap.data().role : null);
       } else {
-        setRole(null)
+        setRole(null);
       }
-      setLoading(false)
-    })
-    return () => unsub()
-  }, [])
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, [auth, db]);
 
   return (
     <AuthContext.Provider value={{ user, role, loading }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  return useContext(AuthContext)
+  return useContext(AuthContext);
 }
